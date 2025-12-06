@@ -18,13 +18,25 @@ from sklearn.metrics import accuracy_score, classification_report, recall_score
 import joblib
 import mlflow
 from sklearn.model_selection import RandomizedSearchCV
-from huggingface_hub import login, HfApi
-
+from huggingface_hub import login, HfApi, RepositoryNotFoundError
 mlflow.set_tracking_uri("http://localhost:5000")
 mlflow.set_experiment("MLOps_experiment")
 
 # Define constants for the dataset and output paths
 api = HfApi(token=os.getenv("HF_TOKEN"))
+
+#Upload to Hugging Face
+repo_id = "asvravi/asv-tourism-package"
+repo_type = "model"
+
+# Step 1: Check if the space exists
+try:
+  api.repo_info(repo_id=repo_id, repo_type=repo_type)
+  print(f"Model '{repo_id}' already exists. Using it.")
+except RepositoryNotFoundError:
+  print(f"Model '{repo_id}' not found. Creating new space...")
+  create_repo(repo_id=repo_id, repo_type=repo_type, private=False)
+  print(f"Model '{repo_id}' created.")
 
 #paths of various data files
 Xtrain_path = "hf://datasets/asvravi/asv-tourism-package/Xtrain.csv"
@@ -150,19 +162,6 @@ with mlflow.start_run():
     # Log the model artifact
     mlflow.log_artifact(model_path, artifact_path="model")
     print(f"Model saved as artifact at: {model_path}")
-
-    # Upload to Hugging Face
-    repo_id = "asvravi/asv-tourism-package"
-    repo_type = "model"
-
-    # Step 1: Check if the space exists
-    try:
-        api.repo_info(repo_id=repo_id, repo_type=repo_type)
-        print(f"Space '{repo_id}' already exists. Using it.")
-    except RepositoryNotFoundError:
-        print(f"Space '{repo_id}' not found. Creating new space...")
-        create_repo(repo_id=repo_id, repo_type=repo_type, private=False)
-        print(f"Space '{repo_id}' created.")
 
     # create_repo("asv-toursim-package-model", repo_type="model", private=False)
     api.upload_file(
