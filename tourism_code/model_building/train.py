@@ -24,8 +24,9 @@ mlflow.set_tracking_uri("http://localhost:5000")
 mlflow.set_experiment("MLOps_experiment")
 
 # Define constants for the dataset and output paths
-api = HfApi()
+api = HfApi(token=os.getenv("HF_TOKEN"))
 
+#paths of various data files
 Xtrain_path = "hf://datasets/asvravi/asv-tourism-package/Xtrain.csv"
 Xtest_path = "hf://datasets/asvravi/asv-tourism-package/Xtest.csv"
 ytrain_path = "hf://datasets/asvravi/asv-tourism-package/ytrain.csv"
