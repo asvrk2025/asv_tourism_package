@@ -20,11 +20,11 @@ import mlflow
 from sklearn.model_selection import RandomizedSearchCV
 
 mlflow.set_tracking_uri("http://localhost:5000")
-mlflow.set_experiment("mlops-training-experiment")
+mlflow.set_experiment("MLOps_experiment")
+
+api = HfApi()
 
 # Define constants for the dataset and output paths
-api = HfApi(token=os.getenv("HF_TOKEN"))
-
 Xtrain_path = "hf://datasets/asvravi/asv-tourism-package/Xtrain.csv"
 Xtest_path = "hf://datasets/asvravi/asv-tourism-package/Xtest.csv"
 ytrain_path = "hf://datasets/asvravi/asv-tourism-package/ytrain.csv"
