@@ -18,6 +18,8 @@ from sklearn.metrics import accuracy_score, classification_report, recall_score
 import joblib
 import mlflow
 from sklearn.model_selection import RandomizedSearchCV
+# for hugging face space authentication to upload files
+from huggingface_hub import login, HfApi
 
 mlflow.set_tracking_uri("http://localhost:5000")
 mlflow.set_experiment("MLOps_experiment")
@@ -92,7 +94,8 @@ with mlflow.start_run():
     # Hyperparameter tuning
     rand_search = RandomizedSearchCV(model_pipeline, param_grid, n_iter=30,cv=5, n_jobs=-1)
     rand_search.fit(Xtrain, ytrain)
-   
+
+    """
     # Log all parameter combinations and their mean test scores
     results = rand_search.cv_results_
     for i in range(len(results['params'])):
@@ -105,7 +108,8 @@ with mlflow.start_run():
             mlflow.log_params(param_set)
             mlflow.log_metric("mean_test_score", mean_score)
             mlflow.log_metric("std_test_score", std_score)
-
+    """
+    
     # Log best parameters separately in main run
     mlflow.log_params(rand_search.best_params_)
 
