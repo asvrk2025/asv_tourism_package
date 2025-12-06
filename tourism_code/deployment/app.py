@@ -241,6 +241,7 @@ input_data = pd.DataFrame([{
     'Designation': designation                        
 }])
 
+classification_threshold = 0.45
 # Predict button
 if st.button("Predict"):
     prediction_proba = model.predict_proba(input_data)[0, 1]
