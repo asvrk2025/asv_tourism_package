@@ -18,7 +18,7 @@ from sklearn.metrics import accuracy_score, classification_report, recall_score
 import joblib
 import mlflow
 from sklearn.model_selection import RandomizedSearchCV
-from huggingface_hub import login, HfApi
+from huggingface_hub import login, HfApi, create_repo
 from huggingface_hub.errors import RepositoryNotFoundError
 
 mlflow.set_tracking_uri("http://localhost:5000")
