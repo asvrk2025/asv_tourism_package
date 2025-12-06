@@ -46,6 +46,7 @@ df.drop(
 """
 df.drop(
     [
+        "Unnamed: 0",
         "CustomerID"
     ],
     axis=1,
@@ -58,13 +59,16 @@ target_col = 'ProdTaken'
 X = df.drop(columns=[target_col])
 y = df[target_col]
 
-# creating dummy variables for categorical features
-X = pd.get_dummies(X, drop_first=True)
-
 # Perform train-test split
 Xtrain, Xtest, ytrain, ytest = train_test_split(
     X, y, test_size=0.2, stratify=y, random_state=42
 )
+
+#print shapes of all above 4 datasets with labels
+print("Xtrain shape:", Xtrain.shape)
+print("Xtest shape:", Xtest.shape)
+print("ytrain shape:", ytrain.shape)
+print("ytest shape:", ytest.shape)
 
 Xtrain.to_csv("Xtrain.csv",index=False)
 Xtest.to_csv("Xtest.csv",index=False)
