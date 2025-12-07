@@ -2,6 +2,8 @@ from huggingface_hub import HfApi
 import os
 
 api = HfApi(token=os.getenv("HF_TOKEN"))
+
+# upload to Hugging Face
 api.upload_folder(
     folder_path="tourism_code/deployment",     # the local folder containing your files
     repo_id="asvravi/asv-tourism-package",     # the target repo

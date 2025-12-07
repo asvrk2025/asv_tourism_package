@@ -218,4 +218,7 @@ if st.button("Predict"):
     prediction_proba = model.predict_proba(input_data)[0, 1]
     prediction = (prediction_proba >= classification_threshold).astype(int)
     result = "likely to buy" if prediction == 1 else "not likely to buy"
-    st.write(f"Based on the information provided, the customer is {result} the new tourism package.")
+    st.subheader("Prediction Result")
+    st.markdown(
+    f"Based on the information provided, the customer is **{result}** the new tourism package."
+)
