@@ -8,44 +8,17 @@ model_path = hf_hub_download(repo_id="asvravi/asv-tourism-package", filename="be
 model = joblib.load(model_path)
 
 # Streamlit UI for Tourism Package Prediction
-st.title("Tourism Package Prediction App")
+st.title("Tourism Package Prediction")
 st.write("""
 This application predicts the likelihood of a customer buying the new Tourism Package.
 Please enter the data below to get a prediction.
 """)
 
-# List of numerical features in the dataset
-numeric_features = [
-    'Age',       # Customer's credit score
-    'DurationOfPitch',
-    'NumberOfFollowups',
-    'PitchSatisfactionScore',
-    'NumberOfPersonVisiting',
-    'PreferredPropertyStar',
-    'NumberOfTrips',
-    'Passport',
-    'OwnCar',
-    'NumberOfChildrenVisiting',
-    'MonthlyIncome',
-    'CityTier',              # City category based on development, population, and living standards
-]
-
-# List of categorical features in the dataset
-categorical_features = [
-    'TypeofContact',         # Country where the customer resides
-    'Occupation',            # Customer's occupation
-    'Gender',                # Gender of the customer
-    'ProductPitched',
-    'MaritalStatus',         # Marital status of the customer
-    'Designation',           # Designation of the customer's current position
-]
-
-
 # User input
 st.header("Section 1 – Basic Information")
 
 # ---------- Row 1 ----------
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col7 = st.columns(4)
 
 with col1:
     age = st.number_input(
@@ -68,6 +41,13 @@ with col3:
     gender = st.radio(
         "Gender",
         ["Male", "Female"],
+        index=0
+    )
+
+with col7:
+    own_car = st.selectbox(
+        "Own a Car",
+        ["Yes", "No"],
         index=0
     )
 
@@ -97,16 +77,6 @@ with col6:
         max_value=20,
         value=0,
         step=1
-    )
-
-# ---------- Row 3 ----------
-col7, col8, col9 = st.columns(3)
-
-with col7:
-    own_car = st.selectbox(
-        "Own a Car",
-        ["Yes", "No"],
-        index=0
     )
 
 st.header("Section 2 – Professional Details")
@@ -242,6 +212,7 @@ input_data = pd.DataFrame([{
 }])
 
 classification_threshold = 0.45
+
 # Predict button
 if st.button("Predict"):
     prediction_proba = model.predict_proba(input_data)[0, 1]

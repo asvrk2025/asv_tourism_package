@@ -10,9 +10,13 @@ from sklearn.preprocessing import LabelEncoder
 # for hugging face space authentication to upload files
 from huggingface_hub import login, HfApi
 
-# Define constants for the dataset and output paths
+# Interface to Hugging Face
 api = HfApi(token=os.getenv("HF_TOKEN"))
+
+# Define constants for the dataset and output paths
 DATASET_PATH = "hf://datasets/asvravi/asv-tourism-package/tourism.csv"
+
+# Reading data from Hugging face
 df = pd.read_csv(DATASET_PATH)
 print("Dataset loaded successfully.")
 
@@ -27,23 +31,7 @@ cols = df.select_dtypes("object")
 for i in cols.columns:
     df[i] = df[i].astype("category")
 
-#Dropping the columns that are not required for model
-# Since the objective is to build models on data of the existing customers which can be used to target new customers, check if we can drop the customer interaction data also from the dataset as those features will not be available for new customers.
-#Also, CustomerID will not be of much help in model building and hence dropping that too.
-
-"""
-df.drop(
-    [
-        "CustomerID",
-        "DurationOfPitch",
-        "NumberOfFollowups",
-        "ProductPitched",
-        "PitchSatisfactionScore",
-    ],
-    axis=1,
-    inplace=True,
-)
-"""
+# Dropping the columns that are not required for model
 df.drop(
     [
         "Unnamed: 0",
@@ -53,6 +41,7 @@ df.drop(
     inplace=True,
 )
 
+# target variable
 target_col = 'ProdTaken'
 
 # Split into X (features) and y (target)
@@ -64,20 +53,21 @@ Xtrain, Xtest, ytrain, ytest = train_test_split(
     X, y, test_size=0.2, stratify=y, random_state=42
 )
 
-#print shapes of all above 4 datasets with labels
+# print shapes of all above 4 datasets with labels
 print("Xtrain shape:", Xtrain.shape)
 print("Xtest shape:", Xtest.shape)
 print("ytrain shape:", ytrain.shape)
 print("ytest shape:", ytest.shape)
 
+# storing the Train and Test datasets to CSV files
 Xtrain.to_csv("Xtrain.csv",index=False)
 Xtest.to_csv("Xtest.csv",index=False)
 ytrain.to_csv("ytrain.csv",index=False)
 ytest.to_csv("ytest.csv",index=False)
 
-
 files = ["Xtrain.csv","Xtest.csv","ytrain.csv","ytest.csv"]
 
+# uploading the train and test csv files to Hugging Face
 for file_path in files:
     api.upload_file(
         path_or_fileobj=file_path,

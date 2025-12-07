@@ -12,26 +12,25 @@ from scipy.stats import randint, uniform
 import random
 # for model training, tuning, and evaluation
 import xgboost as xgb
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.metrics import accuracy_score, classification_report, recall_score
 # for model serialization
 import joblib
 import mlflow
-from sklearn.model_selection import RandomizedSearchCV
+# for working with huggingface
 from huggingface_hub import login, HfApi, create_repo
 from huggingface_hub.errors import RepositoryNotFoundError
 
 mlflow.set_tracking_uri("http://localhost:5000")
 mlflow.set_experiment("MLOps_experiment")
 
-# Define constants for the dataset and output paths
 api = HfApi(token=os.getenv("HF_TOKEN"))
 
-#Upload to Hugging Face
+# repo details on Hugging Face
 repo_id = "asvravi/asv-tourism-package"
 repo_type = "model"
 
-# Step 1: Check if the space exists
+# Step 1: Check if the model repo exists
 try:
   api.repo_info(repo_id=repo_id, repo_type=repo_type)
   print(f"Model '{repo_id}' already exists. Using it.")
@@ -51,7 +50,7 @@ Xtest = pd.read_csv(Xtest_path)
 ytrain = pd.read_csv(ytrain_path)
 ytest = pd.read_csv(ytest_path)
 
-#print shapes of all in one print statement
+#print shapes of all datasets
 print("Xtrain shape:", Xtrain.shape)
 print("Xtest shape:", Xtest.shape)
 print("ytrain shape:", ytrain.shape)
@@ -59,7 +58,7 @@ print("ytest shape:", ytest.shape)
 
 # List of numerical features in the dataset
 numeric_features = [
-    'Age',       # Customer's credit score
+    'Age',       
     'DurationOfPitch',
     'NumberOfFollowups',
     'PitchSatisfactionScore',
@@ -143,7 +142,12 @@ with mlflow.start_run():
     y_pred_test = (y_pred_test_proba >= classification_threshold).astype(int)
 
     train_report = classification_report(ytrain, y_pred_train, output_dict=True)
+    print("Training Classification report :")
+    print(train_report)
+    
     test_report = classification_report(ytest, y_pred_test, output_dict=True)
+    print("Testing Classification report :")
+    print(test_report)
 
     # Log the metrics for the best model
     mlflow.log_metrics({
@@ -165,7 +169,7 @@ with mlflow.start_run():
     mlflow.log_artifact(model_path, artifact_path="model")
     print(f"Model saved as artifact at: {model_path}")
 
-    # create_repo("asv-toursim-package-model", repo_type="model", private=False)
+    # Upload the model to Hugging Face
     api.upload_file(
         path_or_fileobj="best_toursim_package_model_v1.joblib",
         path_in_repo="best_toursim_package_model_v1.joblib",
